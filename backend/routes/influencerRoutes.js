@@ -1,17 +1,20 @@
 import multer from 'multer';
 import express from 'express';
-import { saveInfluencerInfo } from '../controllers/influencerController.js';
+import { saveInfluencerInfo, saveUserInfo } from '../controllers/influencerController.js';
 import { saveInfluencerIn } from '../controllers/influencerControllers.js';
 import { getDeals, getDealsByUserID , getApprovedDeals, getContractDetails, acceptContract } from '../controllers/deals.js';
 import { addProposal, deleteProposal } from '../controllers/proposalController.js';
 import { getUserContracts, getContractByProposalID, sendDraft, approveCancelRequest, rejectCancelRequest } from '../controllers/contractController.js';
-import { uploadMedia, getMedia, editMedia, submitInstaLinks } from '../controllers/MediaController.js'
-import { getInstaMediaByUserId } from '../controllers/instaMediacontroller.js'
+import { uploadMedia, getMedia, editMedia, submitInstaLinks } from '../controllers/MediaController.js';
+import { getInstaMediaByUserId } from '../controllers/instaMediacontroller.js';
+import { addPaymentAccount, getPaymentAccounts, addWithdrawalRequest } from '../controllers/withdrawalController.js';
+import { getEarnings } from '../controllers/getEarnings.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 router.post('/influencerInfo', upload.single('photo'), saveInfluencerInfo);
+router.post('/saveUserInfo', upload.single('photo'), saveUserInfo);
 router.post("/Brand", upload.single("logo"), saveInfluencerIn);
 router.get("/deals", getDeals);
 router.get("/getDealsByUserID", getDealsByUserID);
@@ -30,5 +33,9 @@ router.put('/editMedia', upload.single('media'), editMedia);
 router.post('/submitInstaLinks', submitInstaLinks);
 router.put('/approveCancelRequest/:contractID', approveCancelRequest);
 router.put('/rejectCancelRequest/:contractID', rejectCancelRequest);
+router.post('/addPaymentAccount', addPaymentAccount);
+router.get('/getPaymentAccounts', getPaymentAccounts);
+router.get('/getEarnings', getEarnings);
+router.post('/addWithdrawalRequest', addWithdrawalRequest);
 
 export default router;
