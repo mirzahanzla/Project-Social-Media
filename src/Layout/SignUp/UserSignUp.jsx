@@ -18,7 +18,7 @@ const UserSignUp = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const UserSignUp = () => {
     if (stepperIndex === 1) {
       setLoading(true);
       try {
-        await axios.post('/api/influencerInfo', data, {
+        await axios.post('/api/saveUserInfo', data, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -314,15 +314,15 @@ const Welcome = () => {
   );
 };
 
-const InputField = ({ name, value, onChange }) => {
-  return (
-    <input
-      name={name}
-      value={value}
-      onChange={onChange}
-      className="p-2 poppins-light InputBorder w-[200px] rounded-xl"
-    />
-  );
-};
+// const InputField = ({ name, value, onChange }) => {
+//   return (
+//     <input
+//       name={name}
+//       value={value}
+//       onChange={onChange}
+//       className="p-2 poppins-light InputBorder w-[200px] rounded-xl"
+//     />
+//   );
+// };
 
 export default UserSignUp;

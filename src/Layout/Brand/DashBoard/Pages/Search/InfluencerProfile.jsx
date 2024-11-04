@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+// import { useNavigate } from 'react-router-dom';
+// import { motion } from 'framer-motion';
 import './Index.css';
 import Card from '../../../../../Components/Card/Card';
 import { Pie } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
-import React from 'react';
+// import React from 'react';
 Chart.register(...registerables);
 
 const InfluencerProfile = ({ setShowInfluencerProfile, userName }) => {
@@ -33,16 +33,23 @@ const InfluencerProfile = ({ setShowInfluencerProfile, userName }) => {
                     throw new Error('Failed to fetch report data');
                 }
                 const data = await response.json();
-                setReportData(data);
+    
+                // Check for the specific message
+                if (data.message === "Report not found for this user") {
+                    setReportData(null); // or set it to an empty array if preferred
+                    setError("No reports for this user yet");
+                } else {
+                    setReportData(data); // Set the report data if found
+                    setError(null); // Clear any previous errors
+                }
                 setLoading(false);
             } catch (err) {
-                setError(err.message);
                 setLoading(false);
             }
         };
-
+    
         fetchReportData();
-    }, [userName]);
+    }, [userName]);    
 
     if (loading) {
         return <p>Loading...</p>;

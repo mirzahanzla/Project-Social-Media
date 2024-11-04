@@ -1,7 +1,7 @@
 import { CampaignContext } from './CurrentCompaign';
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import more from '../../../../../../dist/Svg/More.svg';
+import more from '../../../../../../../public/public/Svg/More.svg';
 import { useNavigate } from 'react-router-dom';
 import ContractDetails from './ContractDetails';
 import QueryReportModal from './query';
@@ -17,7 +17,6 @@ const Dashboard = () => {
 
   const [influencers, setInfluencers] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
-
 
   // Fetch influencers from the API
   useEffect(() => {
@@ -181,12 +180,10 @@ const InfluencerList = ({ ImageSrc, Name, age, ColorBorder, Status, TextColor, b
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [showLinks, setShowLinks] = useState(false);
   const [instaMediaLinks, setInstaMediaLinks] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState();
   const [showPaymentOption, setShowPaymentOption] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileError, setFileError] = useState(false);
-  
   
   const navigate = useNavigate();
 
@@ -223,24 +220,6 @@ const InfluencerList = ({ ImageSrc, Name, age, ColorBorder, Status, TextColor, b
         setErrorMessage('Failed to submit the contract cancellation request.');
       }
     }
-  };
-
-   // Function to open the modal
-   const handleCancelClick = () => {
-    setIsModalOpen(true);
-    setShowDropdown(false);
-  };
-
-  // Function to close the modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  // Function to confirm cancellation
-  const handleConfirmCancel = () => {
-    setIsModalOpen(false);
-    // Proceed with cancel action, such as calling the cancel contract function
-    handleCancelContract();
   };
 
   // Toggle the dropdown visibility
@@ -349,15 +328,6 @@ const InfluencerList = ({ ImageSrc, Name, age, ColorBorder, Status, TextColor, b
       console.error("Error fetching posts: ", error);
     }
   };
-  const handleNavigation = (message) => {
-    setShowPosts(false);
-    setSuccessMessage(message); // Set a success message
-    setTimeout(() => {
-      setSuccessMessage(''); // Optional: Clear success message after navigating
-      navigate('/Compaign');
-    }, 1000);
-  };
-
 
   const handleApprove = async (postId) => {
     // API call to approve the post
@@ -365,7 +335,8 @@ const InfluencerList = ({ ImageSrc, Name, age, ColorBorder, Status, TextColor, b
       const response = await axios.put(`/Brand/approveMedia/${postId}`);
   
       if (response.status === 200) {
-        handleNavigation('Post approved successfully.');
+        setSuccessMessage('Post approved successfully.');
+        // Optionally refresh posts or update state
       }
     } catch (error) {
       if (error.response && error.response.data.message) {
@@ -389,7 +360,6 @@ const InfluencerList = ({ ImageSrc, Name, age, ColorBorder, Status, TextColor, b
       if (response.status === 200) {
         setInstruction(''); // Clear the input after successful submission
         setSelectedPostId(null); // Reset selected post ID
-        handleNavigation('Instruction sent successfully.');
       }
     } catch (error) {
       if (error.response && error.response.data.message) {
@@ -419,7 +389,6 @@ const InfluencerList = ({ ImageSrc, Name, age, ColorBorder, Status, TextColor, b
 
       setInstaMediaLinks(data); // Store the fetched instaMedia in the state
       setError(null); // Clear any previous errors
-
     } catch (error) {
       console.error('Error fetching instaMedia links:', error);
       setError('Failed to fetch links. Please try again later.');
@@ -446,8 +415,6 @@ const InfluencerList = ({ ImageSrc, Name, age, ColorBorder, Status, TextColor, b
       const data = await response.json();
       console.log('Contract approved:', data);
       setShowLinks(false); // Close the pop-up after approval
-      navigate('/Compaign');
-
     } catch (error) {
       console.error('Error approving contract:', error);
       setError('Failed to approve contract. Please try again later.');
@@ -485,8 +452,6 @@ const InfluencerList = ({ ImageSrc, Name, age, ColorBorder, Status, TextColor, b
             if (response.ok) {
                 console.log("Upload successful:", data);
                 setShowPaymentOption(false);
-                navigate('/Compaign');
-                
             } else {
                 // Handle errors from the server
                 console.error("Upload failed:", data.message);
@@ -553,24 +518,17 @@ const InfluencerList = ({ ImageSrc, Name, age, ColorBorder, Status, TextColor, b
       );
     }
   
-    
-  if (Status === 'Accepted') {
-    options.push(
-      <li
-        key="cancel"
-        className="px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer"
-        onClick={handleCancelClick}
-      >
-        Cancel
-      </li>
-    );
-  }
+    if (Status === 'Accepted' || Status === 'Instructed') {
+      options.push(
+        <li key="cancel" className="px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={handleCancelContract}>
+          Cancel
+        </li>
+      );
+    }
 
     if (Status === 'Payment Pending') {
       options.push(
-        <li key="uploadScreenshot" className="px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={() => {setShowPaymentOption(true)
-          setShowDropdown(false)}
-        }>
+        <li key="uploadScreenshot" className="px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={() => setShowPaymentOption(true)}>
           Upload Screenshot
         </li>
       );
@@ -581,29 +539,6 @@ const InfluencerList = ({ ImageSrc, Name, age, ColorBorder, Status, TextColor, b
 
   return (
     <div className="mt-5 relative">
-      {/* Modal for Confirming Cancel */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-md shadow-lg w-1/3">
-            <h2 className="text-lg font-semibold mb-4">Are you sure?</h2>
-            <p className="mb-6">Do you really want to cancel this contract?</p>
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={handleCloseModal}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-700"
-              >
-                No
-              </button>
-              <button
-                onClick={handleConfirmCancel}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md text-white"
-              >
-                Yes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showPaymentOption && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
