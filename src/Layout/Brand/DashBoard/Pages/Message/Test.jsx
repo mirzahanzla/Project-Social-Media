@@ -6,8 +6,10 @@ function Test({
   newMessage,
   setNewMessage,
   handleSendMessage,
+  handleSendGroupMessage,
   messagesEndRef,
   loggedInUserId,
+  groupId,  // Assuming groupId is passed as a prop
 }) {
   // Enhanced formatTime function to handle both time and date display
   const formatTime = (timestamp) => {
@@ -32,6 +34,18 @@ function Test({
     } else {
       return `${date.toDateString()} ${hours}:${minutes} ${ampm}`;
     }
+  };
+
+  // Handle sending message logic based on groupId
+  const handleSend = () => {
+    if (groupId) {
+      // If there is a groupId, send as a group message
+      handleSendGroupMessage(groupId, newMessage);
+    } else {
+      // Otherwise, send as a normal message
+      handleSendMessage(newMessage);
+    }
+    setNewMessage(""); // Clear the input after sending the message
   };
 
   return (
@@ -84,7 +98,7 @@ function Test({
         <img
           src="/Svg/Send.svg"
           className="cursor-pointer"
-          onClick={handleSendMessage}
+          onClick={handleSend}  // Use handleSend to check if it's a group or regular message
           alt="Send"
         />
       </div>
